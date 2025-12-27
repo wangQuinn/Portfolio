@@ -4,6 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { sections, Section, EducationItem, ProjectItem } from './data';
 import BackgroundParticles from './components/BackgroundParticles';
 import Typewriter from './components/TypeWriter';
+import dynamic from 'next/dynamic'
+
+
+const Scene = dynamic(() => import('./components/Scene'), {
+  ssr: false,
+})
+
 
 const ACCENT_COLOR = '#ffffff';
 const SECONDARY_COLOR = '#a0a0a0';
@@ -128,15 +135,28 @@ export default function Home() {
           );
         case 'about':
           return (
-            <div>
+            //left 
+            <div >
+              
               <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
                 <Typewriter texts={[section.title]} loop={false} />
               </h2>
-              <p className="text-base md:text-lg leading-relaxed whitespace-pre-line">
+
+            <div className = "split-section">
+              {/* left */}
+              <p className="left text-base md:text-lg leading-relaxed whitespace-pre-line">
                 {section.content}
               </p>
+              {/* //right */}
+              <div className = "right h-full">
+                 <Scene />
+              </div>
+              </div>
             </div>
+            
           );
+        
+
         case 'education': {
           const educationItems = section.items as EducationItem[] | undefined;
           return (

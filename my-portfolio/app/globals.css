@@ -35,35 +35,31 @@ body {
   display: none; /* Chrome, Safari, Opera */
 }
 
-/* Seasonal particle elements */
-.flower {
-  border-radius: 50%;
-  background-color: transparent !important;
-  box-shadow: 0 0 5px var(--theme-accent);
-  border: 1px solid var(--theme-accent);
+/* Split-section container */
+.split-section {
+  display: flex;
+  flex-direction: row;       /* left + right side */
+  width: 100%;
+  min-height: 70vh;         /* ensures enough height for 3D model */
+  gap: 40px;                 /* space between left and right */
+  padding: 20px;
+  box-sizing: border-box;
+  align-items: center;       /* vertically center content */
 }
 
-.sun {
-  border-radius: 50%;
-  box-shadow: 0 0 15px var(--theme-accent);
+/* Left side: content */
+.split-section .left {
+  flex: 1;                  /* takes 1/2 of width */
+  padding-right: 20px;
 }
 
-.leaf {
-  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  transform: rotate(45deg);
-}
-
-.wind {
-  width: 50px !important;
-  height: 2px !important;
-  opacity: 0.2;
-}
-
-.snowflake {
-  border-radius: 50%;
-  box-shadow: 0 0 5px var(--theme-accent);
-  background-color: transparent !important;
-  border: 1px solid var(--theme-accent);
+/* Right side: 3D model */
+.split-section .right {
+  flex: 1;                  /* takes 1/2 of width */
+  display: flex;
+  justify-content: center;  /* center the 3D model horizontally */
+  align-items: center;      /* center the 3D model vertically */
+  min-height: 500px;        /* ensures enough height for 3D model */
 }
 
 .dot {
@@ -264,7 +260,7 @@ html.font-style-10 * {
 /* Container and section styling */
 .content-container {
   width: 90%;
-  max-width: 800px;
+  max-width: 1200px;
   padding: 20px;
   z-index: 1;
   position: relative;
