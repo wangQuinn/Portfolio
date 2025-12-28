@@ -35,63 +35,57 @@ body {
   display: none; /* Chrome, Safari, Opera */
 }
 
-/* Seasonal particle elements */
-.flower {
-  border-radius: 50%;
-  background-color: transparent !important;
-  box-shadow: 0 0 5px var(--theme-accent);
-  border: 1px solid var(--theme-accent);
+/* Split-section container */
+.split-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 32px;
+  padding: 20px 0;
+  box-sizing: border-box;
+  justify-content: center;
 }
 
-.sun {
-  border-radius: 50%;
-  box-shadow: 0 0 15px var(--theme-accent);
+.split-section .left {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
 }
 
-.leaf {
-  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  transform: rotate(45deg);
+.split-section .right {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 320px;
+  position: relative;
 }
 
-.wind {
-  width: 50px !important;
-  height: 2px !important;
-  opacity: 0.2;
+.split-section .right canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
-.snowflake {
-  border-radius: 50%;
-  box-shadow: 0 0 5px var(--theme-accent);
-  background-color: transparent !important;
-  border: 1px solid var(--theme-accent);
+@media (min-width: 768px) {
+  .split-section {
+    flex-direction: row;
+    gap: 40px;
+    padding: 20px;
+    align-items: stretch;
+  }
+
+  .split-section .left {
+    padding-right: 20px;
+  }
 }
 
 .dot {
   border-radius: 50%;
 }
 
-/* Seasonal animations */
-@keyframes float-slow {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-20px) scale(1.1);
-  }
-}
 
-@keyframes pulse-slow {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.1);
-  }
-}
 
 @keyframes fall {
   0% {
@@ -128,28 +122,6 @@ body {
     transform: translateY(110vh) translateX(0);
   }
 }
-
-/* Animation classes */
-.animate-float-slow {
-  animation: float-slow 8s ease-in-out infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 7s ease-in-out infinite;
-}
-
-.animate-fall {
-  animation: fall 10s linear forwards;
-}
-
-.animate-wind {
-  animation: wind 7s linear forwards;
-}
-
-.animate-snow {
-  animation: snow 10s linear forwards;
-}
-
 /* Font style variations for the entire website */
 html.font-style-1 * {
   font-family: 'Courier New', monospace !important;
@@ -264,11 +236,12 @@ html.font-style-10 * {
 /* Container and section styling */
 .content-container {
   width: 90%;
-  max-width: 800px;
+ 
+  max-width: 1200px;
   padding: 20px;
   z-index: 1;
   position: relative;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);

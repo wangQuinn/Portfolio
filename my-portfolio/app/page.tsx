@@ -4,6 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { sections, Section, EducationItem, ProjectItem } from './data';
 import BackgroundParticles from './components/BackgroundParticles';
 import Typewriter from './components/TypeWriter';
+import dynamic from 'next/dynamic'
+
+
+const Scene = dynamic(() => import('./components/Scene'), {
+  ssr: false,
+})
+
 
 const ACCENT_COLOR = '#ffffff';
 const SECONDARY_COLOR = '#a0a0a0';
@@ -128,15 +135,24 @@ export default function Home() {
           );
         case 'about':
           return (
-            <div>
+            <div className="h-full flex flex-col">
               <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
                 <Typewriter texts={[section.title]} loop={false} />
               </h2>
-              <p className="text-base md:text-lg leading-relaxed whitespace-pre-line">
-                {section.content}
-              </p>
+              <div className="split-section flex-1">
+                <div className="left">
+                  <p className="text-base md:text-lg leading-relaxed whitespace-pre-line">
+                    {section.content}
+                  </p>
+                </div>
+                <div className="right">
+                  <Scene />
+                </div>
+              </div>
             </div>
           );
+        
+
         case 'education': {
           const educationItems = section.items as EducationItem[] | undefined;
           return (
@@ -367,11 +383,18 @@ export default function Home() {
           {sections.map((section, index) => {
             const sectionId = getSectionId(section);
             const isActive = index === activeSection;
+            const baseSectionClasses = 'w-full flex justify-center px-4 sm:px-6 py-8 md:py-0';
+            const sectionClass = sectionId === 'about'
+              ? `${baseSectionClasses} h-screen items-stretch`
+              : `${baseSectionClasses} min-h-screen items-center`;
+            const containerClass = sectionId === 'about'
+              ? 'content-container w-full max-w-4xl mx-auto h-full flex flex-col'
+              : 'content-container w-full max-w-4xl mx-auto';
 
             return (
               <section
                 key={sectionId || index}
-                className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 py-8 md:py-0"
+                className={sectionClass}
                 id={sectionId}
               >
                 {isActive && index < sections.length - 1 && (
@@ -392,7 +415,7 @@ export default function Home() {
                 )}
 
                 <div
-                  className="content-container w-full max-w-4xl mx-auto"
+                  className={containerClass}
                   style={{ boxShadow: `0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px ${ACCENT_COLOR}10` }}
                 >
                   {renderSectionContent(section)}

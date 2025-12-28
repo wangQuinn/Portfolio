@@ -50,7 +50,7 @@ export const sections: Section[] = [
 {
     id: 'about ',
     title: 'ABOUT',
-    content: `I'm a passionate software engineer with a focus on AI and machine learning, and large data sets! I started programming in highschool, and am currently pursing a Bachelor of Computer Science. In my free time I like to shoot archery and play video games. `
+    content: `I'm a student at the University of Waterloo, studying Software Engineering with an interest in anything interesting :) I started programming in highschool, and loved the endless knowledge and creativity I could find in the community. In my free time I like to dabbling in various sports, play video games, and scroll Wikipedia. `
 },
  {
     id: 'education',
