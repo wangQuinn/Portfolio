@@ -1,9 +1,8 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Model from './Model'
-import {Suspense } from 'react'
 
 export default function Scene() {
   const [mouse, setMouse] = useState({ x: 0.5, y: 0.5 })
@@ -21,19 +20,33 @@ export default function Scene() {
   }, [])
 
   return (
-    <Canvas
-      camera={{ fov: 75, position: [0, 0, 5] }}
-      style={{ width: '100%', height: '100%' }} 
-      gl={{ alpha: true }}
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '420px',
+        aspectRatio: '1',
+        minHeight: '320px',
+  
+        borderRadius: '16px',
+        position: 'relative',
+        overflow: 'hidden',
+        margin: '0 auto',
+      }}
     >
-      {/* Lights */}
-      <directionalLight position={[5, 5, 5]} intensity={1} />
-      <ambientLight intensity={1} />
-
-        <Suspense fallback = {null}>
-      <Model mouse={mouse} />
-      </Suspense>
-    </Canvas>
-   
+      <Canvas
+        camera={{ fov: 45, position: [0, 0, 4.5] }}
+        style={{ width: '100%', height: '100%' }}
+        gl={{ alpha: true }}
+      >
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[3, 4, 5]} intensity={1.2} />
+        <directionalLight position={[-3, -2, -4]} intensity={0.25} />
+        <Suspense fallback={null}>
+          <group position = {[0, -0.8, 0]}>
+            <Model mouse={mouse} />
+          </group>
+        </Suspense>
+      </Canvas>
+    </div>
   )
 }
