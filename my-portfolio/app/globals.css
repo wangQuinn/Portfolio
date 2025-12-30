@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* FONTS */
+@font-face {
+    font-family: "earwig_factory";
+    src: url("/fonts/earwig_factory.otf") format("opentype");
+}
+
 /* Base styles */
 :root {
   --foreground-rgb: 255, 255, 255;
@@ -83,45 +89,10 @@ body {
 
 .dot {
   border-radius: 50%;
+  
 }
 
 
-
-@keyframes fall {
-  0% {
-    transform: translateY(-10vh) rotate(0deg);
-  }
-  100% {
-    transform: translateY(110vh) rotate(360deg);
-  }
-}
-
-@keyframes wind {
-  0% {
-    transform: translateX(-10vw) scaleX(0.5);
-  }
-  100% {
-    transform: translateX(110vw) scaleX(2);
-  }
-}
-
-@keyframes snow {
-  0% {
-    transform: translateY(-10vh) translateX(0);
-  }
-  25% {
-    transform: translateY(25vh) translateX(5vw);
-  }
-  50% {
-    transform: translateY(50vh) translateX(-5vw);
-  }
-  75% {
-    transform: translateY(75vh) translateX(5vw);
-  }
-  100% {
-    transform: translateY(110vh) translateX(0);
-  }
-}
 /* Font style variations for the entire website */
 html.font-style-1 * {
   font-family: 'Courier New', monospace !important;
@@ -296,39 +267,6 @@ html.font-style-10 * {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Completely replace the typewriter-container and related styles */
-.typewriter-container {
-  position: relative;
-  height: 2em;
-  min-height: 2em;
-  text-align: center;
-  margin: 30px auto;
-  display: block;
-}
-
-.typewriter-text {
-  position: absolute;
-  left: 0;
-  right: 0;
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
-.typewriter-text.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-.typewriter-text.entering {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.typewriter-text.leaving {
-  opacity: 0;
-  transform: translateY(10px);
-}
 
 /* Clean up animations */
 @keyframes typewriter {

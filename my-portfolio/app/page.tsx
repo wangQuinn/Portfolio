@@ -105,7 +105,7 @@ export default function Home() {
         case 'intro':
           return (
             <div className="text-center">
-              <h1 className="text-4xl sm:text-5xl md:text-7xl mb-4  break-words">
+              <h1 className=" h1 text-4xl sm:text-5xl md:text-7xl mb-4  break-words">
                 <Typewriter texts={[section.title]} loop={false} />
               </h1>
               <div className="space-y-2">
@@ -136,7 +136,7 @@ export default function Home() {
         case 'about':
           return (
             <div className="h-full flex flex-col">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
+              <h2 className="h1 text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
                 <Typewriter texts={[section.title]} loop={false} />
               </h2>
               <div className="split-section flex-1">
