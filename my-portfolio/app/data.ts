@@ -58,7 +58,7 @@ export const sections: Section[] = [
     items: [
       {
         title: 'University of Waterloo',
-        period: 'Sept 2024 – May 2028',
+        period: 'Sept 2025 – May 2030',
         description: 'Bachelor of Software Engineering, Honours',
         awards: [
           "President's Scholarship of Distinction - Awarded to students with an admission average of 95% or higher, recognizing exceptional academic achievement and leadership potential",
