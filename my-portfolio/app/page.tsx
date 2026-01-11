@@ -1,429 +1,384 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { sections, Section, EducationItem, ProjectItem } from './data';
-import BackgroundParticles from './components/BackgroundParticles';
+import { sections } from './data';
+import type { EducationItem, ProjectItem, SectionItem } from './data';
 import Typewriter from './components/TypeWriter';
-import dynamic from 'next/dynamic'
+import SimpleTesseract from './components/SimpleTesseract';
 
-
-const Scene = dynamic(() => import('./components/Scene'), {
-  ssr: false,
-})
-
-
-const ACCENT_COLOR = '#ffffff';
-const SECONDARY_COLOR = '#a0a0a0';
-
-const getSectionId = (section: Section) => section.id.trim();
+const isProjectItem = (item: SectionItem | undefined): item is ProjectItem =>
+  !!item && Array.isArray((item as ProjectItem).tech);
 
 export default function Home() {
-    const [activeSection, setActiveSection] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const cursorSpotlightRef = useRef<HTMLDivElement>(null);
-    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [activeSection, setActiveSection] = useState(0);
+  const [isDirectoryOpen, setIsDirectoryOpen] = useState(true);
+  const directoryContentRef = useRef<HTMLDivElement | null>(null);
+  const [directoryHeight, setDirectoryHeight] = useState<number | null>(null);
+  const [isWindowVisible, setIsWindowVisible] = useState(true);
+  const activeSectionData = sections[activeSection];
+  const educationItems =
+    activeSectionData.id === 'education'
+      ? ((activeSectionData.items ?? []) as EducationItem[])
+      : [];
+  const projectItems =
+    activeSectionData.id === 'projects'
+      ? (activeSectionData.items ?? []).filter(isProjectItem)
+      : [];
+  
+  const navigateToSection = (index: number) => {
+    setActiveSection(index);
+  };
 
-    useEffect(() => {
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-      updatePreference();
+  const toggleDirectory = () => {
+    if (directoryContentRef.current) {
+      const contentHeight = directoryContentRef.current.scrollHeight;
+      setDirectoryHeight(contentHeight);
+    }
+    setIsDirectoryOpen((prev) => !prev);
+  };
 
-      if (mediaQuery.addEventListener) {
-        mediaQuery.addEventListener('change', updatePreference);
-      } else {
-        // @ts-ignore legacy browsers
-        mediaQuery.addListener(updatePreference);
-      }
+  useEffect(() => {
+    const contentEl = directoryContentRef.current;
+    if (!contentEl) return;
 
-      return () => {
-        if (mediaQuery.removeEventListener) {
-          mediaQuery.removeEventListener('change', updatePreference);
-        } else {
-          // @ts-ignore legacy browsers
-          mediaQuery.removeListener(updatePreference);
-        }
-      };
-    }, []);
-
-    useEffect(() => {
-      document.documentElement.style.setProperty('--theme-accent', ACCENT_COLOR);
-      document.documentElement.style.setProperty('--theme-secondary', SECONDARY_COLOR);
-    }, []);
-
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const handleScroll = () => {
-        const scrollPosition = container.scrollTop;
-        const viewportHeight = window.innerHeight;
-        const sectionIndex = Math.round(scrollPosition / viewportHeight);
-
-        if (sectionIndex >= 0 && sectionIndex < sections.length) {
-          setActiveSection((prev) => (prev === sectionIndex ? prev : sectionIndex));
-        }
-      };
-
-      container.addEventListener('scroll', handleScroll, { passive: true });
-      return () => container.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    useEffect(() => {
-      if (containerRef.current) {
-        containerRef.current.scrollTop = 0;
-      }
-    }, []);
-
-    useEffect(() => {
-      if (prefersReducedMotion) return;
-
-      const handleMouseMove = (event: MouseEvent) => {
-        if (!cursorSpotlightRef.current) return;
-        cursorSpotlightRef.current.style.left = `${event.clientX}px`;
-        cursorSpotlightRef.current.style.top = `${event.clientY}px`;
-      };
-
-      window.addEventListener('mousemove', handleMouseMove, { passive: true });
-      return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, [prefersReducedMotion]);
-
-    const navigateToSection = (index: number) => {
-      if (index < 0 || index >= sections.length) return;
-      setActiveSection(index);
-
-      const targetId = getSectionId(sections[index]);
-      const sectionElement = document.getElementById(targetId);
-      if (sectionElement) {
-        sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+    const updateHeight = () => {
+      setDirectoryHeight(contentEl.scrollHeight);
     };
 
-    const renderSectionContent = (section: Section) => {
-      const sectionId = getSectionId(section);
+    updateHeight();
 
-      switch (sectionId) {
-        case 'intro':
-          return (
-            <div className="text-center">
-              <h1 className=" h1 text-4xl sm:text-5xl md:text-7xl mb-4  break-words">
-                <Typewriter texts={[section.title]} loop={false} />
-              </h1>
-              <div className="space-y-2">
-                {section.subtitle?.map((line, index) => (
-                  <p
-                    key={`${sectionId}-subtitle-${index}`}
-                    className="text-base sm:text-xl md:text-2xl  "
-                    style={index === 1 ? { animationDelay: '2.2s' } : undefined}
-                  >
-                    {line}
-                  </p>
-                ))}
-              </div>
-              {section.descriptions && (
-                <div
-                  className=" text-xl md:text-2xl font-bold mt-8 mb-8 min-h-[32px] flex justify-center items-center"
-                  style={{ textShadow: '0 0 10px rgba(0,0,0,0.5)' }}
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(updateHeight);
+      observer.observe(contentEl);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', updateHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, []);
+  
+  return (
+    <div className="portfolio-root min-h-screen md:h-screen flex flex-col md:flex-row items-start md:items-center justify-center p-4 md:p-8">
+      {/* Main window container */}
+      {isWindowVisible ? (
+        <div className="w-full max-w-6xl md:h-[90vh] bg-white rounded-xl overflow-hidden window-shadow border-4 border-black flex flex-col">
+        {/* Window title bar */}
+        <div className="bg-white border-b-4 border-black px-4 py-3 flex items-center justify-between">
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsWindowVisible(false)}
+              aria-label="Close window"
+              className="w-4 h-4 rounded-full bg-portfolio-red hover:opacity-80 transition-opacity"
+            ></button>
+            <div className="w-4 h-4 rounded-full bg-portfolio-yellow"></div>
+            <div className="w-4 h-4 rounded-full bg-portfolio-green"></div>
+          </div>
+          <div className="text-2xl font-bold text-black">📁 Quinn Wang - Portfolio</div>
+          <div className="w-24"></div>
+        </div>
+        
+        {/* Main content area - split layout */}
+        <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
+          {/* Sidebar navigation */}
+          <div className="w-full md:w-64 bg-gray-100 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col">
+            {/* Sidebar header */}
+            <div className="px-4 py-4 border-b-4 border-black bg-white">
+              <div className="text-xl font-bold text-black mt-1">📂 Contents!</div>
+            </div>
+            
+            {/* Navigation items */}
+            <div className="sidebar-scroll flex-1 overflow-y-auto">
+              <div className="p-2">
+                <button
+                  type="button"
+                  onClick={toggleDirectory}
+                  aria-expanded={isDirectoryOpen}
+                  className="w-full text-xs font-bold text-black px-3 py-3 uppercase tracking-wider flex items-center gap-2 bg-gray-200 hover:bg-gray-300 transition-colors mb-2 cursor-pointer"
                 >
-                  <Typewriter
-                    texts={section.descriptions}
-                    loop
-                    
-                  />
+                  <span>📁</span>
+                  <span className="flex-1 text-left">File Directory</span>
+                  <span className="text-lg leading-none">{isDirectoryOpen ? '-' : '+'}</span>
+                </button>
+                <div
+                  className={`pl-4 relative directory-list ${
+                    isDirectoryOpen ? 'directory-open' : 'directory-closed directory-list-closed'
+                  }`}
+                  style={{
+                    maxHeight: isDirectoryOpen
+                      ? directoryHeight === null
+                        ? 'none'
+                        : `${directoryHeight}px`
+                      : '0px',
+                  }}
+                >
+                  {/* Vertical tree line */}
+                  <div className="directory-line absolute left-4 top-0 bottom-0 w-0.5 bg-gray-400"></div>
+                  <div ref={directoryContentRef}>
+                    {sections.map((section, index) => (
+                      <button
+                        key={section.id}
+                        onClick={() => navigateToSection(index)}
+                        className={`w-full text-left py-2 text-sm font-medium transition-colors flex items-center gap-2 tree-line directory-item ${
+                          index === sections.length - 1 ? 'tree-last' : ''
+                        } ${
+                          index === activeSection
+                            ? 'bg-gray-300 text-black font-bold'
+                            : 'text-black hover:bg-gray-200'
+                        }`}
+                      >
+                        <span className="text-base relative z-10">📄</span>
+                        <span className="flex-1 relative z-10">{section.title.toLowerCase()}.txt</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Main content panel */}
+          <div className="flex-1 bg-white overflow-hidden flex flex-col">
+            {/* Content header */}
+            <div className="bg-gray-100 border-b-4 border-black px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span>📄</span>
+                <span className="text-2xl font-bold text-black">
+                  {activeSectionData.title.toLowerCase()}.txt
+                </span>
+              </div>
+            </div>
+            
+            {/* Scrollable content */}
+            <div
+              className={`flex-1 overflow-y-auto p-6 md:p-8 bg-white content-scroll ${
+                activeSectionData.id === 'intro' ? 'flex justify-start items-center pt-24 mb-20' : ''
+              }`}
+            >
+              {/* Intro section */}
+              {activeSectionData.id === 'intro' && (
+                <div className="flex flex-col items-center text-center max-w-4xl w-full">
+                  <h1 className="earwig-font text-5xl md:text-7xl mb-6 text-black">
+                    <Typewriter texts={[activeSectionData.title]} loop={false} speed={80} />
+                  </h1>
+                  <div className="space-y-2  max-w-3xl mx-auto">
+                    {activeSectionData.subtitle?.map((line, i) => (
+                      <p key={i} className="text-lg md:text-xl text-[#4a4a4a] text-center">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                  {activeSectionData.descriptions && activeSectionData.descriptions.length > 0 && (
+                    <div className="mt-8 space-y-2">
+                      <div className="text-lg font-semibold text-black flex items-center gap-2 justify-center">
+                        <span>→</span>
+                        <Typewriter texts={activeSectionData.descriptions} loop speed={40} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          );
-        case 'about':
-          return (
-            <div className="h-full flex flex-col">
-              <h2 className="h1 text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
-                <Typewriter texts={[section.title]} loop={false} />
-              </h2>
-              <div className="split-section flex-1">
-                <div className="left">
-                  <p className="text-base md:text-lg leading-relaxed whitespace-pre-line">
-                    {section.content}
-                  </p>
-                </div>
-                <div className="right">
-                  <Scene />
-                </div>
-              </div>
-            </div>
-          );
-        
-
-        case 'education': {
-          const educationItems = section.items as EducationItem[] | undefined;
-          return (
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
-                <Typewriter texts={[section.title]} loop={false} />
-              </h2>
-              <div className="max-h-[65vh] overflow-y-auto pr-4 custom-scrollbar">
-                {educationItems?.map((item, index) => (
-                  <div key={`${item.title}-${index}`} className="mb-8">
-                    <div className="flex flex-col md:flex-row justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold">{item.title}</h3>
-                      <span className="text-white/70">{item.period}</span>
+              
+              {/* About section */}
+              {activeSectionData.id === 'about' && (
+                <div>
+                  <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
+                    <Typewriter texts={[activeSectionData.title]} loop={false} speed={80} />
+                  </h2>
+                  <div className="flex flex-col md:flex-row gap-8">
+                    <div className="flex-1">
+                      <p className="text-lg leading-relaxed text-[#2d2d2d]">
+                        {activeSectionData.content}
+                      </p>
                     </div>
-                    <p className="mb-4">{item.description}</p>
-                    {item.awards?.map((award, awardIndex) => (
-                      <div key={`${item.title}-award-${awardIndex}`} className="border border-white/20 p-3 mt-4">
-                        {award}
+                    <div className="flex-1 flex flex-col items-center gap-4">
+                      <div className="w-full flex items-center justify-center bg-gray-200 rounded-lg p-8 border-4 border-black">
+                        <SimpleTesseract />
                       </div>
-                    ))}
-                    {item.details && (
-                      <div className="mt-4 space-y-2 education-details">
-                        {item.details.map((detail, detailIndex) => (
-                          <p key={`${item.title}-detail-${detailIndex}`}>{detail}</p>
+                      <p className="text-sm text-[#2d2d2d] text-center">
+                        This is a{' '}
+                        <a
+                          href="https://en.wikipedia.org/wiki/Tesseract"
+                        
+                          className="underline text-portfolio-blue"
+                        >
+                          tesseract
+                        </a>{' '}
+                        rotating in the x-w plane and the y-z plane.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Education section */}
+              {activeSectionData.id === 'education' && (
+                <div>
+                  <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
+                    <Typewriter texts={[activeSectionData.title]} loop={false} speed={80} />
+                  </h2>
+                  <div className="space-y-6">
+                    {educationItems.map((item, i) => (
+                      <div key={i} className="bg-gray-100 border-4 border-black rounded-lg p-6">
+                        <div className="flex flex-col md:flex-row justify-between items-start mb-3">
+                          <h3 className="text-xl font-bold text-black">{item.title}</h3>
+                          <span className="text-black font-medium">{item.period}</span>
+                        </div>
+                        <p className="mb-4 text-black text-base">{item.description}</p>
+                        {item.awards?.map((award, j) => (
+                          <div key={j} className="bg-white border-2 border-black p-4 mt-3 rounded">
+                            <p className="text-[#2d2d2d] text-sm">{award}</p>
+                          </div>
                         ))}
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        }
-        case 'skills':
-          return (
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
-                <Typewriter texts={[section.title]} loop={false} />
-              </h2>
-              {section.categories?.map((category) => (
-                <div key={category.name} className="mb-6">
-                  <h3 className="text-lg font-bold mb-3">{category.name}</h3>
-                  <div className="flex flex-wrap">
-                    {category.items.map((item) => (
-                      <span key={`${category.name}-${item}`} className="tech-tag">
-                        {item}
-                      </span>
                     ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          );
-        case 'projects': {
-          const projectItems = section.items as ProjectItem[] | undefined;
-          return (
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
-                <Typewriter texts={[section.title]} loop={false} />
-              </h2>
-              <div className="space-y-12 max-h-[70vh] overflow-y-auto pr-4">
-                {projectItems?.map((project, index) => (
-                  <div key={`${project.title}-${index}`} className="border-l-2 border-white/30 pl-4">
-                    <div className="flex flex-col md:flex-row justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold">
-                        {project.title}
-                        {project.url && (
-                          <a
-                            href={project.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-2 text-sm text-white/70 hover:text-white transition-colors"
-                          >
-                            [View Project]
-                          </a>
-                        )}
+              )}
+              
+              {/* Skills section */}
+              {activeSectionData.id === 'skills' && (
+                <div>
+                  <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
+                    <Typewriter texts={[activeSectionData.title]} loop={false} speed={80} />
+                  </h2>
+                  {activeSectionData.categories?.map((category, i) => (
+                    <div key={i} className="mb-8">
+                      <h3 className="text-xl font-bold mb-4 text-black border-b-2 border-black pb-2">
+                        {category.name}
                       </h3>
-                      <span className="text-white/70">{project.period}</span>
-                    </div>
-                    {project.tech && (
-                      <div className="flex flex-wrap mb-4">
-                        {project.tech.map((tech, techIndex) => (
-                          <span key={`${project.title}-tech-${techIndex}`} className="tech-tag">
-                            {tech}
+                      <div className="flex flex-wrap gap-2">
+                        {category.items.map((item, j) => (
+                          <span
+                            key={j}
+                            className="px-4 py-2 text-sm bg-gray-200 text-black font-semibold border-2 border-black rounded hover:bg-gray-300 transition-colors"
+                          >
+                            {item}
                           </span>
                         ))}
                       </div>
-                    )}
-                    {project.points && (
-                      <ul className="list-disc list-inside space-y-2">
-                        {project.points.map((point, pointIndex) => (
-                          <li key={`${project.title}-point-${pointIndex}`}>{point}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        }
-        case 'contact':
-          return (
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
-                <Typewriter texts={[section.title]} loop={false} />
-              </h2>
-              <div className="space-y-6">
-                {section.email && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                    <span className="text-white/70">Email:</span>
-                    <a href={`mailto:${section.email}`} className="typewriter">
-                      {section.email}
-                    </a>
-                  </div>
-                )}
-
-                {section.links && section.links.length > 0 && (
-                  <div className="flex flex-col items-start gap-4">
-                    <span className="text-white/70">Find me on:</span>
-                    <div className="flex flex-wrap gap-3">
-                      {section.links.map((link) => (
-                        <a
-                          key={link.name}
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="border border-white/20 px-4 py-2 hover:border-white/40 transition-all hover:bg-black/30 hover:scale-105"
-                        >
-                          {link.name}
-                        </a>
-                      ))}
                     </div>
-                  </div>
-                )}
-
-                <div className="flex flex-col items-start gap-4 mt-8">
-                  <div className="flex items-center gap-2">
-                    <a
-                      href="https://cs.uwatering.com/#iantang.me?nav=prev"
-                      className="border border-white/20 px-3 py-2 hover:border-white/40 transition-all hover:bg-black/30 hover:scale-105"
-                    >
-                      ←
-                    </a>
-                    <a
-                      href="https://cs.uwatering.com/#iantang.me"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border border-white/20 px-3 py-2 hover:border-white/40 transition-all hover:bg-black/30 hover:scale-105"
-                    >
-                      <img
-                        src="https://cs.uwatering.com/icon.white.svg"
-                        alt=""
-                        className="w-6 h-6 opacity-80"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </a>
-                    <a
-                      href="https://cs.uwatering.com/#iantang.me?nav=next"
-                      className="border border-white/20 px-3 py-2 hover:border-white/40 transition-all hover:bg-black/30 hover:scale-105"
-                    >
-                      →
-                    </a>
+                  ))}
+                </div>
+              )}
+              
+              {/* Projects section */}
+              {activeSectionData.id === 'projects' && (
+                <div>
+                  <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
+                    <Typewriter texts={[activeSectionData.title]} loop={false} speed={80} />
+                  </h2>
+                  <div className="space-y-8">
+                    {projectItems.map((project, i) => (
+                      <div key={i} className="bg-gray-100 border-4 border-black rounded-lg p-6">
+                        <div className="flex flex-col md:flex-row justify-between items-start mb-3">
+                          <h3 className="text-2xl font-bold text-black">
+                            {project.title}
+                            {project.url && (
+                              <a
+                                href={project.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-3 text-base text-black hover:text-gray-600 transition-colors underline"
+                              >
+                                [view →]
+                              </a>
+                            )}
+                          </h3>
+                          <span className="text-black font-medium">{project.period}</span>
+                        </div>
+                        {project.tech && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {project.tech.map((tech, j) => (
+                              <span
+                                key={j}
+                                className="px-3 py-1 text-xs bg-white border-2 border-black rounded font-medium "
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {project.points && (
+                          <ul className="space-y-2 text-black">
+                            {project.points.map((point, j) => (
+                              <li key={j} className="flex gap-2">
+                                <span className="text-black font-bold">•</span>
+                                <span>{point}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
+              
+              {/* Contact section */}
+              {activeSectionData.id === 'contact' && (
+                <div>
+                  <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
+                    <Typewriter texts={[activeSectionData.title]} loop={false} speed={80} />
+                  </h2>
+                  <div className="space-y-6">
+                    {activeSectionData.email && (
+                      <div className="bg-gray-100 border-4 border-black rounded-lg p-6">
+                        <span className="text-black font-semibold block mb-2">Email:</span>
+                        <a
+                          href={`mailto:${activeSectionData.email}`}
+                          className="text-lg text-black hover:text-gray-600 transition-colors font-medium underline"
+                        >
+                          {activeSectionData.email}
+                        </a>
+                      </div>
+                    )}
+                    
+                    {activeSectionData.links && (
+                      <div className="bg-gray-100 border-4 border-black rounded-lg p-6">
+                        <span className="text-black font-semibold block mb-4">Find me on:</span>
+                        <div className="flex flex-wrap gap-3">
+                          {activeSectionData.links.map((link) => (
+                            <a
+                              key={link.name}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-gray-200 text-black border-2 border-black px-5 py-2 rounded font-semibold hover:bg-gray-300 transition-colors"
+                            >
+                              {link.name}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          );
-        default:
-          return (
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl mb-4 md:mb-8">
-                <Typewriter texts={[section.title]} loop={false} />
-              </h2>
-            </div>
-          );
-      }
-    };
-
-    return (
-      <div className="relative" style={{ color: ACCENT_COLOR }}>
-        <BackgroundParticles reduceMotion={prefersReducedMotion}/>
-        {!prefersReducedMotion && <div ref={cursorSpotlightRef} className="cursor-spotlight" />}
-
-        <div className="fixed top-4 md:top-8 left-0 right-0 z-10 flex justify-center px-2">
-          <div className="flex flex-wrap justify-center gap-1 md:gap-2 max-w-screen-lg mx-auto px-2 md:px-4 py-2 bg-black/30 backdrop-blur-sm rounded-full">
-            {sections.map((section, index) => {
-              const sectionId = getSectionId(section);
-
-              return (
-                <button
-                  key={sectionId || index}
-                  onClick={() => navigateToSection(index)}
-                  className={`resume-section text-xs md:text-sm whitespace-nowrap ${
-                    index === activeSection ? 'active' : ''
-                  }`}
-                  aria-label={`Go to ${section.title} section`}
-                >
-                  {section.title}
-                </button>
-              );
-            })}
           </div>
         </div>
-
-        <div className="fixed right-4 md:right-8 top-1/2 transform -translate-y-1/2 hidden md:flex md:flex-col space-y-2 z-50">
-          {sections.map((item, index) => (
-            <div
-              key={index}
-              className={`nav-dot ${
-                index === activeSection ? 'active' : ''
-              } hover:scale-110 transition-transform`}
-              title={item.title}
-              onClick={() => navigateToSection(index)}
+        </div>
+      ) : (
+        <div className="w-full max-w-6xl flex flex-col items-center justify-center gap-4">
+          
+          <button
+            type="button"
+            onClick={() => setIsWindowVisible(true)}
+            className="border-4 border-black rounded-lg overflow-hidden "
+            aria-label="Reopen window"
+          >
+            <img
+              src="/kirby.gif"
+              alt="Kirby waving to reopen the window"
+              className="w-40 h-auto"
             />
-          ))}
+          </button>
+          <div className="text-lg text-white font-semibold">hooray! click on the kirby to reopen the window</div>
         </div>
-
-        <div
-          ref={containerRef}
-          className="h-screen overflow-y-auto overflow-x-hidden"
-          style={{
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
-          }}
-        >
-          {sections.map((section, index) => {
-            const sectionId = getSectionId(section);
-            const isActive = index === activeSection;
-            const baseSectionClasses = 'w-full flex justify-center px-4 sm:px-6 py-8 md:py-0';
-            const sectionClass = sectionId === 'about'
-              ? `${baseSectionClasses} h-screen items-stretch`
-              : `${baseSectionClasses} min-h-screen items-center`;
-            const containerClass = sectionId === 'about'
-              ? 'content-container w-full max-w-4xl mx-auto h-full flex flex-col'
-              : 'content-container w-full max-w-4xl mx-auto';
-
-            return (
-              <section
-                key={sectionId || index}
-                className={sectionClass}
-                id={sectionId}
-              >
-                {isActive && index < sections.length - 1 && (
-                  <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 animate-bounce opacity-40">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 20L4 12L5.41 10.59L11 16.17L11 4L13 4L13 16.17L18.59 10.59L20 12L12 20Z"
-                        fill={ACCENT_COLOR}
-                      />
-                    </svg>
-                  </div>
-                )}
-
-                <div
-                  className={containerClass}
-                  style={{ boxShadow: `0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px ${ACCENT_COLOR}10` }}
-                >
-                  {renderSectionContent(section)}
-                </div>
-              </section>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
+      )}
+    </div>
+  );
+}

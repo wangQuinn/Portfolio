@@ -23,7 +23,7 @@ export type ExperienceItem = {
 
 export type SectionItem = ProjectItem | EducationItem | ExperienceItem;
 
- export type Section = {
+export type Section = {
   id: string;
   title: string;
   subtitle?: string[];
@@ -48,7 +48,7 @@ export const sections: Section[] = [
     ],
 },
 {
-    id: 'about ',
+  id: 'about',
     title: 'ABOUT',
     content: `I'm a student at the University of Waterloo, studying Software Engineering with an interest in anything interesting :) I started programming in highschool, and loved the endless knowledge and creativity I could find in the community. In my free time I like to dabbling in various sports, play video games, and scroll Wikipedia. `
 },
@@ -107,6 +107,7 @@ export const sections: Section[] = [
         name: 'Tools',
         items: [
           'Git',
+          'MatLab'
         ],
       },
       {
