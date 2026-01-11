@@ -336,6 +336,16 @@ export default function Home() {
                             </a>
                           ))}
                         </div>
+                        <a
+                          href="https://se-webring.xyz/"
+                      
+                          className="mt-4 inline-block bg-gray-200 text-black border-2 border-black px-5 py-2 rounded  hover:bg-gray-300 transition-colors"
+                        >
+                          <img 
+                            src = "/logo_b.png"
+                            alt = "SEWebring"
+                            className = "h-9 w-auto" />
+                        </a>
                       </div>
                     )}
                   </div>
