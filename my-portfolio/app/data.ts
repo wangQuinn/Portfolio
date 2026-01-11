@@ -129,14 +129,26 @@ export const sections: Section[] = [
     items: [
       {
         title: 'Personal Portfolio Website',
-        period: 'Apr 2025',
+        period: 'January 2026',
         url: 'https://github.com/wangQuinn/Portfolio',
         tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'React'],
         points: [
-          'Designed and developed a minimalist, modern portfolio website with unique typography and animation effects',
-          'Implemented custom typewriter animations and font-switching features for a distinctive user experience',
-          'Created a responsive, single-page application with smooth scrolling and section transitions',
-          'Incorporated a random font generator that applies a different monospace typeface on each visit',
+          'Designed and developed a minimalist, fun portfolio website with retro typography and style.',
+          'Implemented custom typewriter animations for a stylish and unique distinctive user experience',
+          'Developed custom TypeScript canvas utilities to render 3D geometry and a four-dimensional tesseract animation',
+          'Utliized Tailwind and React together to create a cohesive experience.',
+        ],
+      },
+      {
+        title: 'WatIsAMap',
+        period: 'October 2025',
+        url: 'https://github.com/wangQuinn/Portfolio',
+        tech: ['React', 'Vite', 'SQL', 'Flask', 'Git'],
+        points: [
+          'Built a website that computes optimal walking paths for Waterloo students and avoids long outdoor routes, using Dijkstra’s Algorithm to compute real-time shortest routes based on user-selected start and end buildings',
+          'Engineered a full-stack web app using React + Vite on the frontend and Flask + SQL on the backend to model campus paths as a weighted graph.',
+          'Used Git for version control to collaborate and manage feature development.',
+      
         ],
       },
     ] as ProjectItem[],
