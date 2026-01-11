@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 
 interface TypewriterProps {
   texts: string[];
-  speed?: number;      // typing speed per character
-  delay?: number;      // pause between strings (ms)
-  loop?: boolean;      // allow cycling and deletion
+  speed?: number;
+  delay?: number;
+  loop?: boolean;
 }
 
 const Typewriter: React.FC<TypewriterProps> = ({
@@ -60,7 +60,7 @@ const Typewriter: React.FC<TypewriterProps> = ({
       if (!isDeleting) {
         setDisplayedText(currentText.slice(0, charIndex + 1));
         if (charIndex + 1 === currentText.length) {
-          setPause(true);           // pause before deleting
+          setPause(true);
           setIsDeleting(true);
         } else {
           setCharIndex(charIndex + 1);

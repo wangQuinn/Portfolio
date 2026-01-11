@@ -61,10 +61,8 @@ export default function Home() {
   
   return (
     <div className="portfolio-root min-h-screen md:h-screen flex flex-col md:flex-row items-start md:items-center justify-center p-4 md:p-8">
-      {/* Main window container */}
       {isWindowVisible ? (
         <div className="w-full max-w-6xl md:h-[90vh] bg-white rounded-xl overflow-hidden window-shadow border-4 border-black flex flex-col">
-        {/* Window title bar */}
         <div className="bg-white border-b-4 border-black px-4 py-3 flex items-center justify-between">
           <div className="hidden md:flex items-center gap-2">
             <button
@@ -80,16 +78,11 @@ export default function Home() {
           <div className="w-24"></div>
         </div>
         
-        {/* Main content area - split layout */}
         <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
-          {/* Sidebar navigation */}
           <div className="w-full md:w-64 bg-gray-100 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col">
-            {/* Sidebar header */}
             <div className="px-4 py-4 border-b-4 border-black bg-white">
               <div className="text-xl font-bold text-black mt-1">📂 Contents!</div>
             </div>
-            
-            {/* Navigation items */}
             <div className="sidebar-scroll flex-1 overflow-y-auto">
               <div className="p-2">
                 <button
@@ -114,7 +107,6 @@ export default function Home() {
                       : '0px',
                   }}
                 >
-                  {/* Vertical tree line */}
                   <div className="directory-line absolute left-4 top-0 bottom-0 w-0.5 bg-gray-400"></div>
                   <div ref={directoryContentRef}>
                     {sections.map((section, index) => (
@@ -139,9 +131,7 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Main content panel */}
           <div className="flex-1 bg-white overflow-hidden flex flex-col">
-            {/* Content header */}
             <div className="bg-gray-100 border-b-4 border-black px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span>📄</span>
@@ -151,13 +141,11 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Scrollable content */}
             <div
               className={`flex-1 overflow-y-auto p-6 md:p-8 bg-white content-scroll ${
                 activeSectionData.id === 'intro' ? 'flex justify-start items-center pt-24 mb-20' : ''
               }`}
             >
-              {/* Intro section */}
               {activeSectionData.id === 'intro' && (
                 <div className="flex flex-col items-center text-center max-w-4xl w-full">
                   <h1 className="earwig-font text-5xl md:text-7xl mb-6 text-black">
@@ -181,7 +169,6 @@ export default function Home() {
                 </div>
               )}
               
-              {/* About section */}
               {activeSectionData.id === 'about' && (
                 <div>
                   <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
@@ -201,7 +188,8 @@ export default function Home() {
                         This is a{' '}
                         <a
                           href="https://en.wikipedia.org/wiki/Tesseract"
-                        
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="underline text-portfolio-blue"
                         >
                           tesseract
@@ -213,7 +201,6 @@ export default function Home() {
                 </div>
               )}
               
-              {/* Education section */}
               {activeSectionData.id === 'education' && (
                 <div>
                   <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
@@ -238,7 +225,6 @@ export default function Home() {
                 </div>
               )}
               
-              {/* Skills section */}
               {activeSectionData.id === 'skills' && (
                 <div>
                   <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
@@ -264,7 +250,6 @@ export default function Home() {
                 </div>
               )}
               
-              {/* Projects section */}
               {activeSectionData.id === 'projects' && (
                 <div>
                   <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">
@@ -317,7 +302,6 @@ export default function Home() {
                 </div>
               )}
               
-              {/* Contact section */}
               {activeSectionData.id === 'contact' && (
                 <div>
                   <h2 className="earwig-font text-4xl md:text-5xl mb-8 text-black">

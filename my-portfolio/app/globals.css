@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom fonts */
 @font-face {
   font-family: "earwig_factory";
   src: url("/fonts/earwig_factory.otf") format("opentype");
@@ -23,7 +22,7 @@ body {
   height: 100%;
   margin: 0;
 
-  background-image: url('/bg.jpg');
+  background-image: url('/bg1.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

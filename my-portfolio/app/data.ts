@@ -1,4 +1,3 @@
-// Content data
 export type ProjectItem = {
   title: string;
   period: string;
@@ -38,7 +37,7 @@ export type Section = {
 export const sections: Section[] = [
 {
     id: 'intro',
-    title: 'QUINN WANG',
+    title: 'QUINN_WANG',
     subtitle: [ 'Software Engineering Student @ UWaterloo'],
     descriptions: [
       'PROBLEM SOLVER',
@@ -50,7 +49,7 @@ export const sections: Section[] = [
 {
   id: 'about',
     title: 'ABOUT',
-    content: `I'm a student at the University of Waterloo, studying Software Engineering with an interest in anything interesting :) I started programming in highschool, and loved the endless knowledge and creativity I could find in the community. In my free time I like to dabbling in various sports, play video games, and scroll Wikipedia. `
+    content: `I'm a student at the University of Waterloo, studying Software Engineering with an interest in anything interesting :) I started programming in highschool, and loved the endless knowledge and creativity I could find in the community. In my free time I like to dabble in various sports, play video games, and scroll Wikipedia. `
 },
  {
     id: 'education',
@@ -87,7 +86,7 @@ export const sections: Section[] = [
   },
    {
     id: 'skills',
-    title: 'TECHNICAL SKILLS',
+    title: 'TECHNICAL_SKILLS',
     categories: [
       {
         name: 'Languages',

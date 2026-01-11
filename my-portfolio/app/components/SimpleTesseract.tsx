@@ -15,7 +15,6 @@ const SimpleTesseract = () => {
     let theta = 0;
     let animationId: number | null = null;
 
-    // 16 vertices of the 8-cell
     const vertices4D: [number, number, number, number][] = [];
     for (let x of [-1, 1])
       for (let y of [-1, 1])
@@ -23,7 +22,6 @@ const SimpleTesseract = () => {
           for (let w of [-1, 1])
             vertices4D.push([x, y, z, w]);
 
-    // Edges differ by exactly one coordinate
     const edges: [number, number][] = [];
     for (let i = 0; i < vertices4D.length; i++) {
       for (let j = i + 1; j < vertices4D.length; j++) {
@@ -46,14 +44,12 @@ const SimpleTesseract = () => {
       const s = Math.sin(theta);
 
       const projected = vertices4D.map(([x, y, z, w]) => {
-        // --- Isoclinic 4D rotation ---
         const x1 = x * c - w * s;
         const w1 = x * s + w * c;
 
         const y1 = y * c - z * s;
         const z1 = y * s + z * c;
 
-        // --- 4D → 3D projection ---
         const d4 = 3;
         const scale4 = d4 / (d4 + w1);
 
@@ -61,7 +57,6 @@ const SimpleTesseract = () => {
         const y3 = y1 * scale4;
         const z3 = z1 * scale4;
 
-        // --- 3D → 2D projection ---
         const d3 = 5;
         const scale3 = d3 / (d3 + z3);
 
@@ -92,7 +87,7 @@ const SimpleTesseract = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} width={200} height={200} />;
+  return <canvas ref={canvasRef} width={200} height={200} className="cube-canvas" />;
 };
 
 export default SimpleTesseract;
